@@ -12,6 +12,7 @@ import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageGraphQL
 import { buildSchema } from 'type-graphql';
 
 import { GreetingResolver } from './resolvers/greeting';
+import refreshTokenRouter from './routes/refreshTokenRouter'
 
 const main = async () => {
   await createConnection({
@@ -25,6 +26,8 @@ const main = async () => {
   });
 
   const app = express();
+
+  app.use('/refresh_token', refreshTokenRouter)
 
   const httpServer = createServer(app);
 
