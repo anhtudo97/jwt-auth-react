@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 import Home from './components/Home'
-import Layout from './components/Layout'
 import Login from './components/Login'
 import Profile from './components/Profile'
 import Register from './components/Register'
 import { useAuthContext } from './contexts/AuthContext'
+import Layout from './layouts'
 
 function App() {
 	const [loading, setLoading] = useState(true)

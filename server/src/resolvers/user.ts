@@ -52,7 +52,11 @@ export class UserResolver {
 
   @Mutation((_return) => UserMutationResponse)
   async login(@Arg('loginInput') { username, password }: LoginInput, @Ctx() { res }: Context): Promise<UserMutationResponse> {
-    const existingUser = await User.findOne({ where: { username } });
+    const existingUser = await User.findOne({
+      where: {
+        username,
+      },
+    });
 
     if (!existingUser) {
       return {
@@ -81,5 +85,34 @@ export class UserResolver {
       user: existingUser,
       accessToken: createToken('accessToken', existingUser),
     };
+  }
+
+  @Mutation((_return) => UserMutationResponse)
+  async logout(@Arg('userId', (_type) => ID) userId: number, @Ctx() { res }: Context): Promise<UserMutationResponse> {
+    const existingUser = await User.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!existingUser) {
+      return {
+        code: 400,
+        success: false,
+      };
+    }
+
+    existingUser.tokenVersion += 1;
+
+    await existingUser.save();
+
+    res.clearCookie(process.env.REFRESH_TOKEN_COOKIE_NAME as string, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/refresh_token',
+    });
+
+    return { code: 200, success: true };
   }
 }
